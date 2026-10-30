@@ -1,0 +1,54 @@
+name: pages
+
+# Writes this origin's site -- the usercontent shell of the go-wasmcontainers
+# playground, from a pinned playground release -- and publishes it at
+# https://go-wasmcontainers-usercontent.github.io/.
+#
+# The site is exactly what `site usercontent --allow <playground origin>`
+# writes (go-wasmcontainers/playground, internal/usercontent): index.html,
+# shell.html, shell.js and sw.js. Nothing of this repository is published.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+env:
+  # The playground release whose shell this origin serves (semver tag).
+  PLAYGROUND: v0.4.0
+  # The only page the shell talks to and lets embed it.
+  ALLOW: https://go-wasmcontainers.github.io
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: actions/setup-go@v7
+        with: { go-version: '1.27.3', cache: false }
+      - name: write the site
+        run: go run "github.com/go-wasmcontainers/playground/cmd/site@${PLAYGROUND}" usercontent --allow "$ALLOW" --out "$RUNNER_TEMP/_site"
+      - name: the files written
+        run: ls -la "$RUNNER_TEMP/_site"
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with: { path: "${{ runner.temp }}/_site" }
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v5
