@@ -17,7 +17,7 @@ permissions: {}
 
 env:
   # The playground release whose shell this origin serves (semver tag).
-  PLAYGROUND: v0.4.0
+  PLAYGROUND: v0.6.0
   # The only page the shell talks to and lets embed it.
   ALLOW: https://go-wasmcontainers.github.io
 
