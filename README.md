@@ -13,7 +13,7 @@ writes, from a pinned playground release, with the playground's origin
 written in:
 
 ```
-go run github.com/go-wasmcontainers/playground/cmd/site@v0.4.0 \
+go run github.com/go-wasmcontainers/playground/cmd/site@v0.6.0 \
   usercontent --allow https://go-wasmcontainers.github.io --out _site
 ```
 
@@ -32,9 +32,11 @@ job.
 
 ## Status
 
-The shell of playground **v0.4.0** is served. `-p` in the browser is not
-usable yet: the playground's view tab and the engine worker's side come with
-the engine release that has `portmap.Virtual` (see the playground README).
+The shell of playground **v0.6.0** is served. `-p` in the browser works
+since playground v0.5.0. v0.6.0's service worker also relays WebDAV's
+methods (`PROPFIND`, `PROPPATCH`, `MKCOL`, `COPY`, `MOVE`, `LOCK`, `UNLOCK`;
+RFC 4918), so a WebDAV client in a container's page works. One such server
+is the playground's `fileshare` image.
 
 ## Updating
 
